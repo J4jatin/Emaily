@@ -1,31 +1,10 @@
-// const keys = require("../config/keys");
-// const stripe = require("stripe")(keys.stripeSecretKey);
-//
-// module.exports = (app) => {
-//   app.post("/api/stripe", async (req, res) => {
-//     const paymentIntent = await stripe.paymentIntents.create({
-//       amount: 500,
-//       currency: "inr",
-//       description: "$5 for 5 credits",
-//       payment_method_data: {
-//         type: "card",
-//         card: {
-//           token: req.body.id,
-//         },
-//       },
-//       confirmation_method: "manual",
-//       confirm: "true",
-//     });
-//
-//     console.log(paymentIntent);
-//   });
-// };
-const keys = require("../config/keys");
-const stripe = require("stripe")(keys.stripeSecretKey);
+const keys = require('../config/keys');
+const stripe = require('stripe')(keys.stripeSecretKey);
+const requireLogin = require('../middlewares/requireLogin');
 
 module.exports = (app) => {
-  app.post("/api/stripe", async (req, res) => {
-    try {
+  app.post('/api/stripe', requireLogin, async (req, res) => {
+
       const paymentIntent = await stripe.paymentIntents.create({
         amount: 500,
         currency: "usd",
@@ -41,14 +20,15 @@ module.exports = (app) => {
         return_url: 'http://localhost:3000/', // specify your return URL
       });
 
-      // Log the Payment Intent for debugging purposes
-      console.log(paymentIntent);
+      // Increase user credits
+      req.user.credits += 5;
+      const user = await req.user.save();
 
-      // Send the client secret back to the client
-      res.json({ clientSecret: paymentIntent.client_secret });
-    } catch (error) {
-      console.error(error);
-      res.status(500).send({ error: 'Unable to create Payment Intent.' });
-    }
+      // Send a combined response with user data and client secret
+      res.json({
+        user,
+        clientSecret: paymentIntent.client_secret
+      });
+
   });
 };
