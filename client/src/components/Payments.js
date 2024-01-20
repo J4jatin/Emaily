@@ -8,8 +8,9 @@ class Payments extends Component {
     return (
       <StripeCheckout
         name="Emaily"
-        description="$5 for 5 email credits"
-        amount={500}
+        description="₹500 for 5 email credits"
+        amount={50000} // Amount is in cents, so 50000 cents = ₹500
+        currency="INR"  // Specify the currency as INR
         token={token => this.props.handleToken(token)}
         stripeKey={process.env.REACT_APP_STRIPE_KEY}
       >
