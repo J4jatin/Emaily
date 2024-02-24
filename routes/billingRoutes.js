@@ -17,18 +17,19 @@ module.exports = (app) => {
         },
         confirmation_method: "manual",
         confirm: "true",
-        return_url: 'http://localhost:3000/', // specify your return URL
+        return_url: 'http://localhost:3000/',
       });
 
-      // Increase user credits
+
       req.user.credits += 5;
       const user = await req.user.save();
 
       // Send a combined response with user data and client secret
-      res.json({
-        user,
-        clientSecret: paymentIntent.client_secret
-      });
+      // res.json({
+      //   user,
+      //   clientSecret: paymentIntent.client_secret
+      // });
+      res.send(user);
 
   });
 };
