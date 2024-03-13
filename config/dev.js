@@ -7,6 +7,9 @@ module.exports = {
   cookieKey: 'jlkjfdklajfdajiejijijfdf',
   stripePublishableKey: 'pk_test_51OWYDFSDcHIZG3fljhwWJvD7qZ0QPHnZc3o4maJCvq9KKhgDldGktam1cXbMFsNPk4wOSGt4HedKCEgXSKD2JRUd00Pa08pcYY',
   stripeSecretKey: 'sk_test_51OWYDFSDcHIZG3flz0Xd2j7bGvxTfikwY5IjTCppGMVhQRbR8EUfTKyi8wpnMU3k7zGOapbKtOIErKYNe1kC9XY100mcUEG5Ho',
-  sendGridKey: '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',
-  redirectDomain: "http://localhost:3000"
+  // sendGridKey: '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',
+  redirectDomain: "http://localhost:3000",
+  mailgunKey: "bd9817b68492c999f2c16f0b589c141a-b02bcf9f-f90d1ec2",
+  mailgunDomain: "sandbox2b8406de959741428463fa8b8ecd19fb.mailgun.org"
+
 };

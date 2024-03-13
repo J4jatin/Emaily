@@ -22,74 +22,40 @@ module.exports = (app) => {
     res.send('Thanks for voting!');
   });
 
-  // app.post('/api/surveys/webhooks', (req, res) => {
-  //   const p = new Path('/api/surveys/:surveyId/:choice');
-  //
-  //   _.chain(req.body)
-  //     .map(({ email, url }) => {
-  //       const match = p.test(new URL(url).pathname);
-  //       if (match) {
-  //         return { email, surveyId: match.surveyId, choice: match.choice };
-  //       }
-  //     })
-  //     .compact()
-  //     .uniqBy('email', 'surveyId')
-  //     .each(({ surveyId, email, choice }) => {
-  //       Survey.updateOne(
-  //         {
-  //           _id: surveyId,
-  //           recipients: {
-  //             $elemMatch: { email: email, responded: false },
-  //           },
-  //         },
-  //         {
-  //           $inc: { [choice]: 1 },
-  //           $set: { 'recipients.$.responded': true },
-  //           lastResponded: new Date(),
-  //         }
-  //       ).exec();
-  //     })
-  //     .value();
-  //
-  //   res.send({});
-  // });
-  app.post('/api/surveys/webhooks', (req, res) => {
-  const p = new Path('/api/surveys/:surveyId/:choice');
-
-  _.chain(req.body)
-    .map(({ email, url }) => {
-      try {
-        const parsedUrl = new URL(url);
-        const match = p.test(parsedUrl.pathname);
-        if (match) {
-          return { email, surveyId: match.surveyId, choice: match.choice };
+  app.post("/api/surveys/webhooks", (req, res) => {
+    const p = new Path("/api/surveys/:surveyId/:choice");
+    _.chain(req.body)
+      .map((item) => {
+        const email = item.recipient;
+        const url = item.url;
+        if (url) {
+          const match = p.test(new URL(url).pathname);
+          if (match) {
+            return { email, surveyId: match.surveyId, choice: match.choice };
+          }
         }
-      } catch (error) {
-        // Handle or log the error if URL parsing fails
-        console.error(`Error parsing URL: ${url}`);
-      }
-    })
-    .compact()
-    .uniqBy('email', 'surveyId')
-    .each(({ surveyId, email, choice }) => {
-      Survey.updateOne(
-        {
-          _id: surveyId,
-          recipients: {
-            $elemMatch: { email: email, responded: false },
+      })
+      .compact()
+      .uniqBy("email", "surveyId")
+      .each(({ surveyId, email, choice }) => {
+        Survey.updateOne(
+          {
+            _id: surveyId,
+            recipients: {
+              $elemMatch: { email: email, responded: false },
+            },
           },
-        },
-        {
-          $inc: { [choice]: 1 },
-          $set: { 'recipients.$.responded': true },
-          lastResponded: new Date(),
-        }
-      ).exec();
-    })
-    .value();
+          {
+            $inc: { [choice]: 1 },
+            $set: { "recipients.$.responded": true },
+            lastResponded: new Date(),
+          }
+        ).exec();
+      })
+      .value();
 
-  res.send({});
-});
+    res.send({});
+  });
 
   app.post('/api/surveys', requireLogin, requireCredits, async (req, res) => {
     const { title, subject, body, recipients } = req.body;
